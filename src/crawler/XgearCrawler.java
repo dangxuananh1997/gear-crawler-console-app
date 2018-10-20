@@ -85,14 +85,21 @@ public class XgearCrawler implements CrawlerInterface {
                 }
                 // add img closing tag
                 if (isStart && line.contains("<img")) {
-                    int pos = line.indexOf("<img");
-                    System.out.println(line);
+                    int openTagPos = line.indexOf("<img");
+                    boolean closeTagProperly = line.indexOf("/>", openTagPos) > 0;
+                    if (!closeTagProperly) {
+                        int closeTagPos = line.indexOf(">", openTagPos);
+                        line = line.substring(0, closeTagPos) + "/" + line.substring(closeTagPos, line.length());
+                    }
                 }
-                if (isStart && !line.isEmpty()) {
-                    document += line.trim();
-                }
+                // close tag ul
                 if (isStart && line.contains("</ul>")) {
+                    line = line.substring(0, line.indexOf("</ul>")) + "</ul>";
+                    document += line.trim();
                     break;
+                }
+                if (isStart && !line.trim().isEmpty()) {
+                    document += line.trim();
                 }
             }
             return document;
@@ -107,21 +114,20 @@ public class XgearCrawler implements CrawlerInterface {
         try {
             int lastPageNumber = getLastPageNumber(url);
             for (int page = 1; page <= lastPageNumber; page++) {
-                String domString = getProductDomString(url + "/page/" + page);
+                String domString = getProductDomString(url + "page/" + page);
                 if (!domString.isEmpty()) {
                     Document document = XMLUtilities.parseStringToDom(domString);
                     XPath xPath = XMLUtilities.getXPath();
-                    NodeList productList = (NodeList) xPath.evaluate(".//div[@class='item-detail']", document, XPathConstants.NODESET);
+                    NodeList productList = (NodeList) xPath.evaluate(".//div[@class='item-detail']//div[@class='item-content products-content']", document, XPathConstants.NODESET);
                     if (productList != null) {
                         for (int p = 0; p < productList.getLength(); p++) {
                             Node product = productList.item(p);
-                            Node productLink = (Node) xPath.evaluate(".//a", product, XPathConstants.NODE);
+                            Node productLink = (Node) xPath.evaluate("./h4/a", product, XPathConstants.NODE);
                             productLinkArray.add(productLink.getAttributes().getNamedItem("href").getTextContent());
                         }
                     }
                 }
             }
-            System.out.println(productLinkArray);
         } catch (Exception ex) {
             Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -130,9 +136,7 @@ public class XgearCrawler implements CrawlerInterface {
     
     @Override
     public void crawlLaptop() {
-//        getLastPageNumber("https://xgear.vn/danh-muc/laptop-asus/");
-//        getProductDomString("https://xgear.vn/danh-muc/laptop-asus/");
-        getAllProductLink("https://xgear.vn/danh-muc/laptop-asus/");
+        
     }
 
     @Override

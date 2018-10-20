@@ -37,11 +37,14 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                 if (isStart && line.contains("&") && line.contains(";")) {
                     line = line.replaceAll("&", "a").replaceAll(";", "z");
                 }
+                // close tag ul
+                if (isStart && line.contains("</ul>")) {
+                    line = line.substring(0, line.indexOf("</ul>")) + "</ul>";
+                    document += line.trim();
+                    break;
+                }
                 if (isStart && !line.isEmpty()) {
                     document += line.trim();
-                }
-                if (isStart && line.contains("</ul>")) {
-                    break;
                 }
             }
             return document;
@@ -91,7 +94,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                 if (isStart && line.contains("data-price")) {
                     line = "";
                 }
-                if (isStart && !line.isEmpty()) {
+                if (isStart && !line.trim().isEmpty()) {
                     document += line.trim();
                 }
                 if (isStart && line.contains("</section>")) {
@@ -132,7 +135,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
     
     @Override
     public void crawlLaptop() {
-        
+        System.out.println(getAllProductLink("https://hangchinhhieu.vn/collections/laptop"));
     }
 
     @Override
