@@ -18,11 +18,11 @@ import utilities.XMLUtilities;
  *
  * @author dangxuananh1997
  */
-public class HangchinhhieuCrawler implements CrawlerInterface {
+public class XgearCrawler implements CrawlerInterface {
 
-    public HangchinhhieuCrawler() {
+    public XgearCrawler() {
     }
-    
+
     private String getPaginationDomString(String url) {
         try {
             BufferedReader reader = XMLUtilities.getBufferedReaderFromURL(url);
@@ -30,7 +30,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
             String document = "";
             boolean isStart = false;
             while ((line = reader.readLine()) != null) {
-                if (line.contains("<ul class=\"pagination\">")) {
+                if (line.contains("<ul class=\'page-numbers\'>")) {
                     isStart = true;
                 }
                 // replace entity &-; with a-z
@@ -76,7 +76,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
             String document = "";
             boolean isStart = false;
             while ((line = reader.readLine()) != null) {
-                if (line.contains("<section id=\"insCollectionPage\">")) {
+                if (line.contains("class=\"products-loop")) {
                     isStart = true;
                 }
                 // replace entity &-; with a-z
@@ -85,16 +85,13 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                 }
                 // add img closing tag
                 if (isStart && line.contains("<img")) {
-                    line += "</img>";
-                }
-                // remove data-price with '<' line
-                if (isStart && line.contains("data-price")) {
-                    line = "";
+                    int pos = line.indexOf("<img");
+                    System.out.println(line);
                 }
                 if (isStart && !line.isEmpty()) {
                     document += line.trim();
                 }
-                if (isStart && line.contains("</section>")) {
+                if (isStart && line.contains("</ul>")) {
                     break;
                 }
             }
@@ -110,20 +107,21 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         try {
             int lastPageNumber = getLastPageNumber(url);
             for (int page = 1; page <= lastPageNumber; page++) {
-                String domString = getProductDomString(url + "?page=" + page);
+                String domString = getProductDomString(url + "/page/" + page);
                 if (!domString.isEmpty()) {
                     Document document = XMLUtilities.parseStringToDom(domString);
                     XPath xPath = XMLUtilities.getXPath();
-                    NodeList productList = (NodeList) xPath.evaluate("//*[@id=\"pd_collection\"]/ul/li", document, XPathConstants.NODESET);
+                    NodeList productList = (NodeList) xPath.evaluate(".//div[@class='item-detail']", document, XPathConstants.NODESET);
                     if (productList != null) {
                         for (int p = 0; p < productList.getLength(); p++) {
                             Node product = productList.item(p);
-                            Node productLink = (Node) xPath.evaluate(".//div[@class=\"image-product\"]/a", product, XPathConstants.NODE);
+                            Node productLink = (Node) xPath.evaluate(".//a", product, XPathConstants.NODE);
                             productLinkArray.add(productLink.getAttributes().getNamedItem("href").getTextContent());
                         }
                     }
                 }
             }
+            System.out.println(productLinkArray);
         } catch (Exception ex) {
             Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -132,7 +130,9 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
     
     @Override
     public void crawlLaptop() {
-        
+//        getLastPageNumber("https://xgear.vn/danh-muc/laptop-asus/");
+//        getProductDomString("https://xgear.vn/danh-muc/laptop-asus/");
+        getAllProductLink("https://xgear.vn/danh-muc/laptop-asus/");
     }
 
     @Override
