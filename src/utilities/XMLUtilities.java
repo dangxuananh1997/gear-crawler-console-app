@@ -15,7 +15,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
@@ -70,4 +72,18 @@ public class XMLUtilities {
         }
         return null;
     }
+    
+    public static XMLStreamReader parseStringToXMLStreamReader(String xmlSection) {
+        try {
+            byte[] byteArray = xmlSection.getBytes("UTF-8");
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+            XMLInputFactory factory = XMLInputFactory.newFactory();
+            XMLStreamReader reader = factory.createXMLStreamReader(inputStream);
+            return reader;
+        } catch (UnsupportedEncodingException | XMLStreamException ex) {
+            Logger.getLogger(XMLUtilities.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
 }

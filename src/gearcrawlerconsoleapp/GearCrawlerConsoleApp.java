@@ -1,6 +1,8 @@
 package gearcrawlerconsoleapp;
 
+import crawler.HangchinhhieuCrawler;
 import crawler.XgearCrawler;
+import utilities.XMLUtilities;
 
 /**
  *
@@ -11,8 +13,8 @@ public class GearCrawlerConsoleApp {
     public static void main(String[] args) {
         XgearCrawler crawler = new XgearCrawler();
 //        crawler.crawlLaptop();
-        String str = "<a><img></a>";
-        System.out.println(str.indexOf("<img"));
+        HangchinhhieuCrawler hccCrawler = new HangchinhhieuCrawler();
+        hccCrawler.crawlLaptop();
     }
     
 }

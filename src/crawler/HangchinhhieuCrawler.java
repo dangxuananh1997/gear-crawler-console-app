@@ -1,11 +1,15 @@
 package crawler;
 
+import dto.Laptop;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -20,6 +24,12 @@ import utilities.XMLUtilities;
  */
 public class HangchinhhieuCrawler implements CrawlerInterface {
 
+    private final String siteUrl = "https://hangchinhhieu.vn";
+    private final String laptopPath = "/collections/laptop";
+    private final String mousePath = "/collections/chuot";
+    private final String keyboardPath = "/collections/ban-phim";
+    private final String headsetPath = "/collections/tai-nghe";
+    
     public HangchinhhieuCrawler() {
     }
     
@@ -43,7 +53,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                     document += line.trim();
                     break;
                 }
-                if (isStart && !line.isEmpty()) {
+                if (isStart && !line.trim().isEmpty()) {
                     document += line.trim();
                 }
             }
@@ -133,9 +143,63 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         return productLinkArray;
     }
     
+    private String getInfoTableDomString(String url) {
+        try {
+            BufferedReader reader = XMLUtilities.getBufferedReaderFromURL(url);
+            String line;
+            boolean isStart = false;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("<table")) {
+                    int openTagPos = line.indexOf("<table");
+                    int closeTagPos = line.indexOf("</table>") > 0
+                            ? line.indexOf("</table>")
+                            : line.length();
+                    line = line.substring(openTagPos, closeTagPos) + "</table>";
+                    
+                    // replace entity &nbsp; with space
+                    if (line.contains("&nbsp;")) {
+                        line = line.replaceAll("&nbsp;", " ");
+                    }
+                    
+                    if (closeTagPos > 0) {
+                        return line.trim();
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
+    
+    private Map<String, String> getInfoTableMap(String tableDomString) {
+        Map<String, String> table = new HashMap<>();
+        try {
+            XMLStreamReader reader = XMLUtilities.parseStringToXMLStreamReader(tableDomString);
+            while (reader.hasNext()) {
+                int cursor = reader.next();
+                if (cursor == XMLStreamReader.START_ELEMENT) {
+                    String tagName = reader.getLocalName();
+                    if (tagName.equals("span")) {
+                        System.out.println(reader.getElementText());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return table;
+    }
+    
+    private Laptop parseLaptop(String tableDomString) {
+        
+        return null;
+    }
+    
     @Override
     public void crawlLaptop() {
-        System.out.println(getAllProductLink("https://hangchinhhieu.vn/collections/laptop"));
+        String laptopDomString = getInfoTableDomString("https://hangchinhhieu.vn/products/msi-gt83-titan-8rg-037vn");
+        getInfoTableMap(laptopDomString);
     }
 
     @Override
