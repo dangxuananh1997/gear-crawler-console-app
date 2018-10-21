@@ -3,12 +3,13 @@ package crawler;
 import dto.Laptop;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -118,8 +119,8 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         return "";
     }
     
-    private List<String> getAllProductLink(String url) {
-        List<String> productLinkArray = new LinkedList<>();
+    private List<Laptop> getAllProductLink(String url) {
+        List<Laptop> productArray = new LinkedList<>();
         try {
             int lastPageNumber = getLastPageNumber(url);
             for (int page = 1; page <= lastPageNumber; page++) {
@@ -130,9 +131,16 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                     NodeList productList = (NodeList) xPath.evaluate("//*[@id=\"pd_collection\"]/ul/li", document, XPathConstants.NODESET);
                     if (productList != null) {
                         for (int p = 0; p < productList.getLength(); p++) {
-                            Node product = productList.item(p);
-                            Node productLink = (Node) xPath.evaluate(".//div[@class=\"image-product\"]/a", product, XPathConstants.NODE);
-                            productLinkArray.add(productLink.getAttributes().getNamedItem("href").getTextContent());
+                            Node productNode = productList.item(p);
+                            Node productLinkNode = (Node) xPath.evaluate(".//a[@class=\"productName\"]", productNode, XPathConstants.NODE);
+                            String productLink = productLinkNode.getAttributes().getNamedItem("href").getTextContent().trim();
+                            String productName = productLinkNode.getAttributes().getNamedItem("title").getTextContent().trim();
+                            String productPriceNode = (String) xPath.evaluate(".//p[@class=\"pdPrice\"]/span", productNode, XPathConstants.STRING);
+                            System.out.println(productLink);
+                            System.out.println(productName);
+                            System.out.println(productPriceNode);
+                            
+                            // add laptop to array
                         }
                     }
                 }
@@ -140,7 +148,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         } catch (Exception ex) {
             Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return productLinkArray;
+        return productArray;
     }
     
     private String getInfoTableDomString(String url) {
@@ -173,33 +181,54 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
     }
     
     private Map<String, String> getInfoTableMap(String tableDomString) {
-        Map<String, String> table = new HashMap<>();
+        Map<String, String> table = new Hashtable<>();
         try {
             XMLStreamReader reader = XMLUtilities.parseStringToXMLStreamReader(tableDomString);
+            String tmpKey = null;
             while (reader.hasNext()) {
                 int cursor = reader.next();
                 if (cursor == XMLStreamReader.START_ELEMENT) {
                     String tagName = reader.getLocalName();
                     if (tagName.equals("span")) {
-                        System.out.println(reader.getElementText());
+                        if (tmpKey == null) {
+                            tmpKey = reader.getElementText();
+                        } else {
+                            table.put(tmpKey, reader.getElementText());
+                            tmpKey = null;
+                        }
                     }
                 }
             }
-        } catch (Exception e) {
-            System.out.println(e);
+        } catch (XMLStreamException ex) {
+            Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return table;
     }
     
     private Laptop parseLaptop(String tableDomString) {
-        
+        try {
+            Map<String, String> table = getInfoTableMap(tableDomString);
+            String cpu = table.get("CPU");
+            String gpu = table.get("Card đồ họa");
+            String ram = table.get("RAM");
+            String hardDrive = table.get("Ổ cứng");
+            String monitor = table.get("Màn hình");
+            String ports = table.get("Cổng giao tiếp");
+            String lan = table.get("Chuẩn LAN");
+            String wireless = table.get("Chuẩn WIFI") + ", " + table.get("Bluetooth");
+            
+            return null;
+        } catch (Exception e) {
+            
+        }
         return null;
     }
     
     @Override
     public void crawlLaptop() {
-        String laptopDomString = getInfoTableDomString("https://hangchinhhieu.vn/products/msi-gt83-titan-8rg-037vn");
-        getInfoTableMap(laptopDomString);
+//        String laptopDomString = getInfoTableDomString("https://hangchinhhieu.vn/products/msi-gt83-titan-8rg-037vn");
+//        System.out.println(parseLaptop(laptopDomString));
+        getAllProductLink("https://hangchinhhieu.vn/collections/laptop");
     }
 
     @Override

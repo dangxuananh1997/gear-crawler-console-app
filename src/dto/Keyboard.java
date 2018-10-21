@@ -14,8 +14,8 @@ public class Keyboard extends Product {
     private String size;
     private String switches;
 
-    public Keyboard(int numberOfKey, String pressForce, String distance, String led, String weight, String size, String switches, String hashCode, String name, int price) {
-        super(hashCode, name, price);
+    public Keyboard(int numberOfKey, String pressForce, String distance, String led, String weight, String size, String switches, String hashCode, String name, int price, String productLink) {
+        super(hashCode, name, price, productLink);
         this.numberOfKey = numberOfKey;
         this.pressForce = pressForce;
         this.distance = distance;

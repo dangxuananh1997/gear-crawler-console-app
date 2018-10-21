@@ -15,8 +15,12 @@ public class Laptop extends Product {
     private String lan;
     private String wireless;
 
-    public Laptop(String cpu, String gpu, String ram, String hardDrive, String monitor, String ports, String lan, String wireless, String hashCode, String name, int price) {
-        super(hashCode, name, price);
+    public Laptop(String hashCode, String name, int price, String productLink) {
+        super(hashCode, name, price, productLink);
+    }
+    
+    public Laptop(String cpu, String gpu, String ram, String hardDrive, String monitor, String ports, String lan, String wireless, String hashCode, String name, int price, String productLink) {
+        super(hashCode, name, price, productLink);
         this.cpu = cpu;
         this.gpu = gpu;
         this.ram = ram;
@@ -57,6 +61,38 @@ public class Laptop extends Product {
 
     public String getWireless() {
         return wireless;
+    }
+
+    public void setCpu(String cpu) {
+        this.cpu = cpu;
+    }
+
+    public void setGpu(String gpu) {
+        this.gpu = gpu;
+    }
+
+    public void setRam(String ram) {
+        this.ram = ram;
+    }
+
+    public void setHardDrive(String hardDrive) {
+        this.hardDrive = hardDrive;
+    }
+
+    public void setMonitor(String monitor) {
+        this.monitor = monitor;
+    }
+
+    public void setPorts(String ports) {
+        this.ports = ports;
+    }
+
+    public void setLan(String lan) {
+        this.lan = lan;
+    }
+
+    public void setWireless(String wireless) {
+        this.wireless = wireless;
     }
     
 }

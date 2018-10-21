@@ -10,11 +10,13 @@ public class Product {
     private String hashCode;
     private String name;
     private int price;
+    private String productLink;
 
-    public Product(String hashCode, String name, int price) {
+    public Product(String hashCode, String name, int price, String productLink) {
         this.hashCode = hashCode;
         this.name = name;
         this.price = price;
+        this.productLink = productLink;
     }
 
     public int getId() {
@@ -31,6 +33,10 @@ public class Product {
 
     public int getPrice() {
         return price;
+    }
+
+    public String getProductLink() {
+        return productLink;
     }
     
 }
