@@ -15,7 +15,7 @@ public class Keyboard extends Product {
     private String switches;
 
     public Keyboard(String numberOfKey, String pressForce, String distance, String led, String weight, String size, String switches, Product product) {
-        super(product.getName(), product.getPrice(), product.getProductLink());
+        super(product.getName(), product.getImage(), product.getPrice(), product.getProductLink());
         this.numberOfKey = numberOfKey;
         this.pressForce = pressForce;
         this.distance = distance;
@@ -56,7 +56,7 @@ public class Keyboard extends Product {
 
     @Override
     public String toString() {
-        return "{" + "numberOfKey=" + numberOfKey + ", pressForce=" + pressForce + ", distance=" + distance + ", led=" + led + ", weight=" + weight + ", size=" + size + ", switches=" + switches + '}';
+        return "{" + "numberOfKey=" + numberOfKey + ", pressForce=" + pressForce + ", distance=" + distance + ", led=" + led + ", weight=" + weight + ", size=" + size + ", switches=" + switches + ", image=" + getImage() + "}";
     }
     
 }

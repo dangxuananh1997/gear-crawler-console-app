@@ -145,8 +145,10 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                             String productLink = productLinkNode.getAttributes().getNamedItem("href").getTextContent().trim();
                             String productName = productLinkNode.getAttributes().getNamedItem("title").getTextContent().trim();
                             String productPrice = (String) xPath.evaluate(".//p[@class=\"pdPrice\"]/span", productNode, XPathConstants.STRING);
+                            Node productImageNode = (Node) xPath.evaluate(".//div[@class=\"image-product\"]/a/img", productNode, XPathConstants.NODE);
+                            String productImage = productImageNode.getAttributes().getNamedItem("src").getTextContent().trim();
                             
-                            Product product = new Product(productName, CommonUtilities.convertPriceHangchinhhieu(productPrice), productLink);
+                            Product product = new Product(productName, productImage, CommonUtilities.convertPriceHangchinhhieu(productPrice), productLink);
                             productArray.add(product);
                             System.out.print("+");
                         }

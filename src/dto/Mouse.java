@@ -12,7 +12,7 @@ public class Mouse extends Product {
     private String numberOfButton;
 
     public Mouse(String weight, String maxDPI, String led, String numberOfButton, Product product) {
-        super(product.getName(), product.getPrice(), product.getProductLink());
+        super(product.getName(), product.getImage(), product.getPrice(), product.getProductLink());
         this.weight = weight;
         this.maxDPI = maxDPI;
         this.led = led;

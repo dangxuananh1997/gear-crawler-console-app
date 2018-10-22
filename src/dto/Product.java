@@ -9,11 +9,13 @@ public class Product {
     private int id;
     private String hashCode;
     private String name;
+    private String image;
     private int price;
     private String productLink;
 
-    public Product(String name, int price, String productLink) {
+    public Product(String name, String image, int price, String productLink) {
         this.name = name;
+        this.image = image;
         this.price = price;
         this.productLink = productLink;
     }
@@ -28,6 +30,10 @@ public class Product {
 
     public String getName() {
         return name;
+    }
+
+    public String getImage() {
+        return image;
     }
 
     public int getPrice() {

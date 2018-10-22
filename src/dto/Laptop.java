@@ -16,7 +16,7 @@ public class Laptop extends Product {
     private String wireless;
 
     public Laptop(String cpu, String gpu, String ram, String hardDrive, String monitor, String ports, String lan, String wireless, Product product) {
-        super(product.getName(), product.getPrice(), product.getProductLink());
+        super(product.getName(), product.getImage(), product.getPrice(), product.getProductLink());
         this.cpu = cpu;
         this.gpu = gpu;
         this.ram = ram;
