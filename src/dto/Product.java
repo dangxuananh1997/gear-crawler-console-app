@@ -7,7 +7,7 @@ package dto;
 public class Product {
     
     private int id;
-    private String hashCode;
+    private int hashCode;
     private String name;
     private String image;
     private int price;
@@ -18,13 +18,14 @@ public class Product {
         this.image = image;
         this.price = price;
         this.productLink = productLink;
+        this.hashCode = (name + image + price + productLink).hashCode();
     }
 
     public int getId() {
         return id;
     }
 
-    public String getHashCode() {
+    public int getHashCode() {
         return hashCode;
     }
 
@@ -48,8 +49,4 @@ public class Product {
         this.id = id;
     }
 
-    public void setHashCode(String hashCode) {
-        this.hashCode = hashCode;
-    }
-    
 }
