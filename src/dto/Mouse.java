@@ -9,10 +9,14 @@ public class Mouse extends Product {
     private String weight;
     private String maxDPI;
     private String led;
-    private int numberOfButton;
+    private String numberOfButton;
 
-    public Mouse(String name, int price, String productLink) {
-        super(name, price, productLink);
+    public Mouse(String weight, String maxDPI, String led, String numberOfButton, Product product) {
+        super(product.getName(), product.getPrice(), product.getProductLink());
+        this.weight = weight;
+        this.maxDPI = maxDPI;
+        this.led = led;
+        this.numberOfButton = numberOfButton;
     }
 
     public String getWeight() {
@@ -27,8 +31,13 @@ public class Mouse extends Product {
         return led;
     }
 
-    public int getNumberOfButton() {
+    public String getNumberOfButton() {
         return numberOfButton;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + "weight=" + weight + ", maxDPI=" + maxDPI + ", led=" + led + ", numberOfButton=" + numberOfButton + '}';
     }
     
 }

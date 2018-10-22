@@ -1,6 +1,8 @@
 package crawler;
 
+import dto.Keyboard;
 import dto.Laptop;
+import dto.Mouse;
 import dto.Product;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -200,7 +202,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                 int cursor = reader.next();
                 if (cursor == XMLStreamReader.START_ELEMENT) {
                     String tagName = reader.getLocalName();
-                    if (tagName.equals("span")) {
+                    if (tagName.equals("td")) {
                         // traverse until meet text node
                         while (!reader.hasText() && reader.hasNext()) {
                             reader.next();
@@ -243,7 +245,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
     
     @Override
     public void crawlLaptop() {
-        List<Product> productList = getAllDraftProducts("https://hangchinhhieu.vn/collections/laptop");
+        List<Product> productList = getAllDraftProducts(siteUrl + laptopPath);
         for (Product product : productList) {
             String tableDomString = getInfoTableDomString(siteUrl + product.getProductLink());
             Laptop laptop = parseLaptop(tableDomString, product);
@@ -251,14 +253,57 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         }
     }
 
+    private Mouse parseMouse(String tableDomString, Product product) {
+        try {
+            Map<String, String> table = getInfoTableMap(tableDomString);
+            String weight = table.get("Cân nặng");
+            String maxDPI = table.get("DPI (Tối thiểu / Tối đa)");
+            String led = table.get("LED");
+            String numberOfButton = table.get("Số nút");
+            Mouse mouse = new Mouse(weight, maxDPI, led, numberOfButton, product);
+            return mouse;
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
     @Override
     public void crawlMouse() {
-        
+        List<Product> productList = getAllDraftProducts(siteUrl + mousePath);
+        for (Product product : productList) {
+            String tableDomString = getInfoTableDomString(siteUrl + product.getProductLink());
+            Mouse mouse = parseMouse(tableDomString, product);
+            System.out.println(mouse);
+        }
+    }
+
+    private Keyboard parseKeyboard(String tableDomString, Product product) {
+        try {
+            Map<String, String> table = getInfoTableMap(tableDomString);
+            String numberOfKey = table.get("Số nút");
+            String pressForce = table.get("Lực nhấn");
+            String distance = table.get("Khoảng cách hành trình");
+            String led = table.get("Đền nền");
+            String weight = table.get("Trọng lượng");
+            String size = table.get("Kích thước");
+            String switches = table.get("Switch");
+            Keyboard keyboard = new Keyboard(numberOfKey, pressForce, distance, led, weight, size, switches, product);
+            return keyboard;
+        } catch (NumberFormatException ex) {
+            Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
     public void crawlKeyboard() {
-        
+        List<Product> productList = getAllDraftProducts(siteUrl + keyboardPath);
+        for (Product product : productList) {
+            String tableDomString = getInfoTableDomString(siteUrl + product.getProductLink());
+            Keyboard keyboard = parseKeyboard(tableDomString, product);
+            System.out.println(keyboard);
+        }
     }
 
     @Override

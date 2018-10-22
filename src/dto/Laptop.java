@@ -59,38 +59,6 @@ public class Laptop extends Product {
         return wireless;
     }
 
-    public void setCpu(String cpu) {
-        this.cpu = cpu;
-    }
-
-    public void setGpu(String gpu) {
-        this.gpu = gpu;
-    }
-
-    public void setRam(String ram) {
-        this.ram = ram;
-    }
-
-    public void setHardDrive(String hardDrive) {
-        this.hardDrive = hardDrive;
-    }
-
-    public void setMonitor(String monitor) {
-        this.monitor = monitor;
-    }
-
-    public void setPorts(String ports) {
-        this.ports = ports;
-    }
-
-    public void setLan(String lan) {
-        this.lan = lan;
-    }
-
-    public void setWireless(String wireless) {
-        this.wireless = wireless;
-    }
-
     @Override
     public String toString() {
         return "{" + "cpu=" + cpu + ", gpu=" + gpu + ", ram=" + ram + ", hardDrive=" + hardDrive + ", monitor=" + monitor + ", ports=" + ports + ", lan=" + lan + ", wireless=" + wireless + "}";

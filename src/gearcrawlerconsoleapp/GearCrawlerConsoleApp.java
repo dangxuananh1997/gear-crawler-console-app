@@ -1,7 +1,6 @@
 package gearcrawlerconsoleapp;
 
 import crawler.HangchinhhieuCrawler;
-import crawler.XgearCrawler;
 
 /**
  *
@@ -11,7 +10,7 @@ public class GearCrawlerConsoleApp {
 
     public static void main(String[] args) {
         HangchinhhieuCrawler hccCrawler = new HangchinhhieuCrawler();
-        hccCrawler.crawlLaptop();
+        hccCrawler.crawlKeyboard();
     }
     
 }

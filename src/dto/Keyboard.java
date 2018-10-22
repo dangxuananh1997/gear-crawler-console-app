@@ -6,7 +6,7 @@ package dto;
  */
 public class Keyboard extends Product {
     
-    private int numberOfKey;
+    private String numberOfKey;
     private String pressForce;
     private String distance;
     private String led;
@@ -14,11 +14,19 @@ public class Keyboard extends Product {
     private String size;
     private String switches;
 
-    public Keyboard(String name, int price, String productLink) {
-        super(name, price, productLink);
+    public Keyboard(String numberOfKey, String pressForce, String distance, String led, String weight, String size, String switches, Product product) {
+        super(product.getName(), product.getPrice(), product.getProductLink());
+        this.numberOfKey = numberOfKey;
+        this.pressForce = pressForce;
+        this.distance = distance;
+        this.led = led;
+        this.weight = weight;
+        this.size = size;
+        this.switches = switches;
     }
+    
 
-    public int getNumberOfKey() {
+    public String getNumberOfKey() {
         return numberOfKey;
     }
 
@@ -44,6 +52,11 @@ public class Keyboard extends Product {
 
     public String getSwitches() {
         return switches;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + "numberOfKey=" + numberOfKey + ", pressForce=" + pressForce + ", distance=" + distance + ", led=" + led + ", weight=" + weight + ", size=" + size + ", switches=" + switches + '}';
     }
     
 }
