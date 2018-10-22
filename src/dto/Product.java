@@ -12,8 +12,7 @@ public class Product {
     private int price;
     private String productLink;
 
-    public Product(String hashCode, String name, int price, String productLink) {
-        this.hashCode = hashCode;
+    public Product(String name, int price, String productLink) {
         this.name = name;
         this.price = price;
         this.productLink = productLink;
@@ -37,6 +36,14 @@ public class Product {
 
     public String getProductLink() {
         return productLink;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setHashCode(String hashCode) {
+        this.hashCode = hashCode;
     }
     
 }

@@ -1,6 +1,7 @@
 package crawler;
 
 import dto.Laptop;
+import dto.Product;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Hashtable;
@@ -14,9 +15,11 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import utilities.CommonUtilities;
 import utilities.XMLUtilities;
 
 /**
@@ -66,6 +69,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
     }
     
     private int getLastPageNumber(String url) {
+        System.out.print("get last page");
         int pageNum = 1;
         try {
             String domString = getPaginationDomString(url);
@@ -80,6 +84,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         } catch (NumberFormatException | XPathExpressionException ex) {
             Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println(" - done");
         return pageNum;
     }
     
@@ -99,7 +104,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                 }
                 // add img closing tag
                 if (isStart && line.contains("<img")) {
-                    line += "</img>";
+                    line = CommonUtilities.addCloseTagToLine(line, "img");
                 }
                 // remove data-price with '<' line
                 if (isStart && line.contains("data-price")) {
@@ -119,8 +124,9 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         return "";
     }
     
-    private List<Laptop> getAllProductLink(String url) {
-        List<Laptop> productArray = new LinkedList<>();
+    private List<Product> getAllDraftProducts(String url) {
+        System.out.println("get all draft products");
+        List<Product> productArray = new LinkedList<>();
         try {
             int lastPageNumber = getLastPageNumber(url);
             for (int page = 1; page <= lastPageNumber; page++) {
@@ -132,22 +138,23 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                     if (productList != null) {
                         for (int p = 0; p < productList.getLength(); p++) {
                             Node productNode = productList.item(p);
+                            
                             Node productLinkNode = (Node) xPath.evaluate(".//a[@class=\"productName\"]", productNode, XPathConstants.NODE);
                             String productLink = productLinkNode.getAttributes().getNamedItem("href").getTextContent().trim();
                             String productName = productLinkNode.getAttributes().getNamedItem("title").getTextContent().trim();
-                            String productPriceNode = (String) xPath.evaluate(".//p[@class=\"pdPrice\"]/span", productNode, XPathConstants.STRING);
-                            System.out.println(productLink);
-                            System.out.println(productName);
-                            System.out.println(productPriceNode);
+                            String productPrice = (String) xPath.evaluate(".//p[@class=\"pdPrice\"]/span", productNode, XPathConstants.STRING);
                             
-                            // add laptop to array
+                            Product product = new Product(productName, CommonUtilities.convertPriceHangchinhhieu(productPrice), productLink);
+                            productArray.add(product);
+                            System.out.print("+");
                         }
                     }
                 }
             }
-        } catch (Exception ex) {
+        } catch (XPathExpressionException | DOMException ex) {
             Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("\nget all draft products - done");
         return productArray;
     }
     
@@ -155,7 +162,6 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         try {
             BufferedReader reader = XMLUtilities.getBufferedReaderFromURL(url);
             String line;
-            boolean isStart = false;
             while ((line = reader.readLine()) != null) {
                 if (line.contains("<table")) {
                     int openTagPos = line.indexOf("<table");
@@ -167,6 +173,11 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                     // replace entity &nbsp; with space
                     if (line.contains("&nbsp;")) {
                         line = line.replaceAll("&nbsp;", " ");
+                    }
+                    
+                    // add br closing tag
+                    if (line.contains("<br")) {
+                        line = CommonUtilities.addCloseTagToLine(line, "br");
                     }
                     
                     if (closeTagPos > 0) {
@@ -190,11 +201,17 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                 if (cursor == XMLStreamReader.START_ELEMENT) {
                     String tagName = reader.getLocalName();
                     if (tagName.equals("span")) {
-                        if (tmpKey == null) {
-                            tmpKey = reader.getElementText();
-                        } else {
-                            table.put(tmpKey, reader.getElementText());
-                            tmpKey = null;
+                        // traverse until meet text node
+                        while (!reader.hasText() && reader.hasNext()) {
+                            reader.next();
+                        }
+                        if (reader.hasNext()) {
+                            if (tmpKey == null) {
+                                tmpKey = reader.getText();
+                            } else {
+                                table.put(tmpKey, reader.getText());
+                                tmpKey = null;
+                            }
                         }
                     }
                 }
@@ -205,7 +222,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         return table;
     }
     
-    private Laptop parseLaptop(String tableDomString) {
+    private Laptop parseLaptop(String tableDomString, Product product) {
         try {
             Map<String, String> table = getInfoTableMap(tableDomString);
             String cpu = table.get("CPU");
@@ -216,19 +233,22 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
             String ports = table.get("Cổng giao tiếp");
             String lan = table.get("Chuẩn LAN");
             String wireless = table.get("Chuẩn WIFI") + ", " + table.get("Bluetooth");
-            
-            return null;
-        } catch (Exception e) {
-            
+            Laptop laptop = new Laptop(cpu, gpu, ram, hardDrive, monitor, ports, lan, wireless, product);
+            return laptop;
+        } catch (Exception ex) {
+            Logger.getLogger(HangchinhhieuCrawler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
     
     @Override
     public void crawlLaptop() {
-//        String laptopDomString = getInfoTableDomString("https://hangchinhhieu.vn/products/msi-gt83-titan-8rg-037vn");
-//        System.out.println(parseLaptop(laptopDomString));
-        getAllProductLink("https://hangchinhhieu.vn/collections/laptop");
+        List<Product> productList = getAllDraftProducts("https://hangchinhhieu.vn/collections/laptop");
+        for (Product product : productList) {
+            String tableDomString = getInfoTableDomString(siteUrl + product.getProductLink());
+            Laptop laptop = parseLaptop(tableDomString, product);
+            System.out.println(laptop);
+        }
     }
 
     @Override

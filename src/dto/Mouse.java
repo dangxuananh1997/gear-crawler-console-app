@@ -11,12 +11,8 @@ public class Mouse extends Product {
     private String led;
     private int numberOfButton;
 
-    public Mouse(String weight, String maxDPI, String led, int numberOfButton, String hashCode, String name, int price, String productLink) {
-        super(hashCode, name, price, productLink);
-        this.weight = weight;
-        this.maxDPI = maxDPI;
-        this.led = led;
-        this.numberOfButton = numberOfButton;
+    public Mouse(String name, int price, String productLink) {
+        super(name, price, productLink);
     }
 
     public String getWeight() {
