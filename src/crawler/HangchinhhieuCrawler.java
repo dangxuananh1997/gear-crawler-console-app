@@ -90,7 +90,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         return pageNum;
     }
     
-    private String getProductDomString(String url) {
+    private String getProductListDomString(String url) {
         try {
             BufferedReader reader = XMLUtilities.getBufferedReaderFromURL(url);
             String line;
@@ -132,7 +132,7 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
         try {
             int lastPageNumber = getLastPageNumber(url);
             for (int page = 1; page <= lastPageNumber; page++) {
-                String domString = getProductDomString(url + "?page=" + page);
+                String domString = getProductListDomString(url + "?page=" + page);
                 if (!domString.isEmpty()) {
                     Document document = XMLUtilities.parseStringToDom(domString);
                     XPath xPath = XMLUtilities.getXPath();

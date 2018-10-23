@@ -7,23 +7,40 @@ package utilities;
 public class CommonUtilities {
     
     public static int convertPriceHangchinhhieu(String priceString) {
-        if (priceString.equals("Liên hệ")) {
+        try {
+            if (priceString.equals("Liên hệ")) {
+                return 0;
+            }
+
+            // remove 'đ' character
+            priceString = priceString.substring(0, priceString.length() - 1);
+
+            while (priceString.contains(",")) {
+                int pos = priceString.indexOf(",");
+                priceString = priceString.substring(0, pos) + priceString.substring(pos + 1, priceString.length());
+            }
+
+            return Integer.parseInt(priceString);
+        } catch (Exception e) {
             return 0;
         }
-        
-        // remove 'đ' character
-        priceString = priceString.substring(0, priceString.length() - 1);
-        
-        while (priceString.contains(",")) {
-            int pos = priceString.indexOf(",");
-            priceString = priceString.substring(0, pos) + priceString.substring(pos + 1, priceString.length());
-        }
-        
-        return Integer.parseInt(priceString);
     }
     
-    public static int convertPriceXgear(String price) {
-        return 0;
+    public static int convertPriceTanThanhDanh(String priceString) {
+        try {
+            if (priceString.equals("Liên hệ")) {
+                return 0;
+            }
+
+            while (priceString.contains(".")) {
+                int pos = priceString.indexOf(".");
+                priceString = priceString.substring(0, pos) + priceString.substring(pos + 1, priceString.length());
+            }
+
+            return Integer.parseInt(priceString);
+        } catch (Exception e) {
+            return 0;
+        }
     }
     
     public static String addCloseTagToLine(String line, String tag) {
