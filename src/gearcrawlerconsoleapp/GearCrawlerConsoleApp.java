@@ -1,6 +1,9 @@
 package gearcrawlerconsoleapp;
 
 import crawler.HangchinhhieuCrawler;
+import crawler.TanThanhDanhCrawler;
+import crawler.XgearCrawler;
+import java.io.IOException;
 
 /**
  *
@@ -8,9 +11,14 @@ import crawler.HangchinhhieuCrawler;
  */
 public class GearCrawlerConsoleApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         HangchinhhieuCrawler hccCrawler = new HangchinhhieuCrawler();
-        hccCrawler.crawlKeyboard();
+//        hccCrawler.crawlKeyboard();
+        TanThanhDanhCrawler tthCrawler = new TanThanhDanhCrawler();
+//        tthCrawler.crawlLaptop();
+        XgearCrawler xgCrawler = new XgearCrawler();
+        xgCrawler.crawlKeyboard();
+        xgCrawler.crawlMouse();
     }
     
 }

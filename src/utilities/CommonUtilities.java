@@ -26,12 +26,15 @@ public class CommonUtilities {
         }
     }
     
-    public static int convertPriceTanThanhDanh(String priceString) {
+    public static int convertPriceXgear(String priceString) {
         try {
             if (priceString.equals("Liên hệ")) {
                 return 0;
             }
 
+            // remove 'đ' character
+            priceString = priceString.substring(0, priceString.length() - 1);
+            
             while (priceString.contains(".")) {
                 int pos = priceString.indexOf(".");
                 priceString = priceString.substring(0, pos) + priceString.substring(pos + 1, priceString.length());
