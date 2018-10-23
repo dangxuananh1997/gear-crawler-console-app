@@ -211,9 +211,9 @@ public class HangchinhhieuCrawler implements CrawlerInterface {
                         }
                         if (reader.hasNext()) {
                             if (tmpKey == null) {
-                                tmpKey = reader.getText();
+                                tmpKey = reader.getText().trim();
                             } else {
-                                table.put(tmpKey, reader.getText());
+                                table.put(tmpKey, reader.getText().trim());
                                 tmpKey = null;
                             }
                         }

@@ -61,7 +61,7 @@ public class Laptop extends Product {
 
     @Override
     public String toString() {
-        return "{" + "cpu=" + cpu + ", gpu=" + gpu + ", ram=" + ram + ", hardDrive=" + hardDrive + ", monitor=" + monitor + ", ports=" + ports + ", lan=" + lan + ", wireless=" + wireless + "}";
+        return getHashCode() + "\n" + getName() + "\n" + getPrice() + "\n" + getImage() + "\n" + cpu + "\n" + gpu + "\n" + ram + "\n" + hardDrive + "\n" + monitor + "\n" + ports + "\n" + lan + "\n" + wireless + "\n";
     }
     
 }

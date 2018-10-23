@@ -17,6 +17,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -30,7 +31,12 @@ import utilities.XMLUtilities;
 public class XgearCrawler implements CrawlerInterface {
     
     private final String siteUrl = "https://xgear.vn";
-    private final String laptopPath = "/danh-muc/laptop-msi";
+    private final String[] laptopPath = {
+        "/danh-muc/laptop-msi",
+        "/danh-muc/laptop-asus/",
+        "/danh-muc/laptop-dell/",
+        "/danh-muc/laptop-acer/",
+    };
     private final String mousePath = "/danh-muc/mouse";
     private final String keyboardPath = "/danh-muc/keyboard";
     private final String headsetPath = "/danh-muc/headset-tai-nghe";
@@ -99,6 +105,10 @@ public class XgearCrawler implements CrawlerInterface {
                 if (line.contains("class=\"products-loop")) {
                     isStart = true;
                 }
+                // replace entity &#8363; with đ
+                if (isStart && line.contains("&#8363;")) {
+                    line = line.replaceAll("&#8363;", "đ");
+                }
                 // replace entity &-; with a-z
                 if (isStart && line.contains("&") && line.contains(";")) {
                     line = line.replaceAll("&", "a").replaceAll(";", "z");
@@ -148,9 +158,7 @@ public class XgearCrawler implements CrawlerInterface {
                             Node productNameNode = (Node) xPath.evaluate(".//div[@class='item-content products-content']/h4/a", productNode, XPathConstants.NODE);
                             String productName = productNameNode.getTextContent();
                             
-//                            Node productPriceNode = (Node) xPath.evaluate(".//div[@class=\"price\"]", productNode, XPathConstants.NODE);
-//                            String productPrice = productPriceNode.getTextContent();
-                            String productPrice = "2.000.000d";
+                            String productPrice = (String) xPath.evaluate(".//span[@class='item-price']/span", productNode, XPathConstants.STRING);
                             
                             Product product = new Product(productName, productImage, CommonUtilities.convertPriceXgear(productPrice), productLink);
                             productArray.add(product);
@@ -159,7 +167,7 @@ public class XgearCrawler implements CrawlerInterface {
                     }
                 }
             }
-        } catch (Exception ex) {
+        } catch (XPathExpressionException | DOMException ex) {
             Logger.getLogger(XgearCrawler.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println("\nget all draft products - done");
@@ -200,6 +208,9 @@ public class XgearCrawler implements CrawlerInterface {
     private Map<String, String> getInfoTableMap(String tableDomString) {
         Map<String, String> table = new Hashtable<>();
         try {
+            if (tableDomString.isEmpty()) {
+                return table;
+            }
             XMLStreamReader reader = XMLUtilities.parseStringToXMLStreamReader(tableDomString);
             String tmpKey = null;
             while (reader.hasNext()) {
@@ -212,9 +223,9 @@ public class XgearCrawler implements CrawlerInterface {
                         }
                         if (reader.hasNext()) {
                             if (tmpKey == null) {
-                                tmpKey = reader.getText();
+                                tmpKey = reader.getText().trim();
                             } else {
-                                table.put(tmpKey, reader.getText());
+                                table.put(tmpKey, reader.getText().trim());
                                 tmpKey = null;
                             }
                         }
@@ -248,11 +259,13 @@ public class XgearCrawler implements CrawlerInterface {
     
     @Override
     public void crawlLaptop() {
-        List<Product> productList = getAllDraftProducts(siteUrl + laptopPath);
-        for (Product product : productList) {
-            String tableDomString = getInfoTableDomString(product.getProductLink());
-            Laptop laptop = parseLaptop(tableDomString, product);
-            System.out.println(laptop);
+        for (String laptopLink : laptopPath) {
+            List<Product> productList = getAllDraftProducts(siteUrl + laptopLink);
+            for (Product product : productList) {
+                String tableDomString = getInfoTableDomString(product.getProductLink());
+                Laptop laptop = parseLaptop(tableDomString, product);
+                System.out.println(laptop);
+            }
         }
     }
 
