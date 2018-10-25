@@ -6,7 +6,7 @@ import dto.Mouse;
 import dto.Product;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -206,7 +206,7 @@ public class XgearCrawler implements CrawlerInterface {
     }
     
     private Map<String, String> getInfoTableMap(String tableDomString) {
-        Map<String, String> table = new Hashtable<>();
+        Map<String, String> table = new HashMap<>();
         try {
             if (tableDomString.isEmpty()) {
                 return table;
